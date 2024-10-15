@@ -14,23 +14,23 @@ POST http://{{host}}/produtos
 Content-Type: application/json
 
 {
-    "nome": "Produto C",
-    "preco": 15.0,
-    "descricao": "Descrição do Produto C",
-    "quantidadeEmEstoque": 300
+    "nome": "Produto E",
+    "preco": 65.0,
+    "descricao": "Descrição do Produto E",
+    "quantidadeEmEstoque": 110
 }
 
 ###
 
-PUT http://{{host}}/produtos/2
+PUT http://{{host}}/produtos/5
 Content-Type: application/json
 
 {
-    "nome": "Produto Ce",
+    "nome": "Produto Ehh",
     "preco": 20.0,
-    "descricao": "Descrição do Produto C",
+    "descricao": "Descrição do Produto Ehh",
     "quantidadeEmEstoque": 300
 }
 
 ###
-DELETE http://{{host}}/produtos/1
+DELETE http://{{host}}/produtos/5
