@@ -1,0 +1,36 @@
+@hostname = localhost
+@port = 8080
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+@createdAt = {{$datetime iso8601}}
+@modifiedBy = {{$processEnv USERNAME}}
+
+GET http://{{host}}/produtos
+
+
+###
+
+POST http://{{host}}/produtos
+Content-Type: application/json
+
+{
+    "nome": "Produto C",
+    "preco": 15.0,
+    "descricao": "Descrição do Produto C",
+    "quantidadeEmEstoque": 300
+}
+
+###
+
+PUT http://{{host}}/produtos/2
+Content-Type: application/json
+
+{
+    "nome": "Produto Ce",
+    "preco": 20.0,
+    "descricao": "Descrição do Produto C",
+    "quantidadeEmEstoque": 300
+}
+
+###
+DELETE http://{{host}}/produtos/1
