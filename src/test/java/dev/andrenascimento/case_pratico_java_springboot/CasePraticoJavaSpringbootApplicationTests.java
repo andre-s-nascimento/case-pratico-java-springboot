@@ -10,4 +10,8 @@ class CasePraticoJavaSpringbootApplicationTests {
 	void contextLoads() {
 	}
 
+	@Test
+    void main() {
+        CasePraticoJavaSpringbootApplication.main(new String[] {});
+    }
 }
