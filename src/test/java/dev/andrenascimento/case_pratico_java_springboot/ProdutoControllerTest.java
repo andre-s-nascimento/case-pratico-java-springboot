@@ -28,7 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.andrenascimento.case_pratico_java_springboot.controllers.ProdutoController;
 import dev.andrenascimento.case_pratico_java_springboot.dtos.ProdutoRequest;
 import dev.andrenascimento.case_pratico_java_springboot.dtos.ProdutoResponse;
-import dev.andrenascimento.case_pratico_java_springboot.exceptions.ProdutoNotFoundException;
 import dev.andrenascimento.case_pratico_java_springboot.mappers.ProdutoMapper;
 import dev.andrenascimento.case_pratico_java_springboot.models.Produto;
 import dev.andrenascimento.case_pratico_java_springboot.services.ProdutoService;

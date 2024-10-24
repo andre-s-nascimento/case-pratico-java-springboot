@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import dev.andrenascimento.case_pratico_java_springboot.dtos.ProdutoRequest;
 import dev.andrenascimento.case_pratico_java_springboot.dtos.ProdutoResponse;
-import dev.andrenascimento.case_pratico_java_springboot.exceptions.ProdutoNotFoundException;
 import dev.andrenascimento.case_pratico_java_springboot.services.ProdutoService;
 import jakarta.validation.Valid;
 
