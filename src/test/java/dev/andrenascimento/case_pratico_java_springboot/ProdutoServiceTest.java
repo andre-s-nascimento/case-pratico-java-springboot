@@ -43,18 +43,18 @@ public class ProdutoServiceTest {
 
     @Test
     void shouldUpdateProductWhenIdIsValid() {
-        Long productId = 1L;
+        Long produtoId = 1L;
         ProdutoRequest request = new ProdutoRequest("Produto Atualizado", 15.0, "Descrição Atualizada", 10);
-        Produto existingProduct = new Produto(productId, "Produto Antigo", 10.0, "Descrição Antiga", 5);
-        Produto updatedProduct = new Produto(productId, "Produto Atualizado", 15.0, "Descrição Atualizada", 10);
+        Produto produtoExistente = new Produto(produtoId, "Produto Antigo", 10.0, "Descrição Antiga", 5);
+        Produto produtoAtualizado = new Produto(produtoId, "Produto Atualizado", 15.0, "Descrição Atualizada", 10);
 
-        when(produtoRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
-        when(produtoMapper.toEntity(request)).thenReturn(updatedProduct);
-        when(produtoRepository.save(updatedProduct)).thenReturn(updatedProduct);
-        when(produtoMapper.toResponse(updatedProduct))
-                .thenReturn(new ProdutoResponse(productId, "Produto Atualizado", 15.0, "Descrição Atualizada", 10));
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produtoExistente));
+        when(produtoMapper.toEntity(request)).thenReturn(produtoAtualizado);
+        when(produtoRepository.save(produtoAtualizado)).thenReturn(produtoAtualizado);
+        when(produtoMapper.toResponse(produtoAtualizado))
+                .thenReturn(new ProdutoResponse(produtoId, "Produto Atualizado", 15.0, "Descrição Atualizada", 10));
 
-        ProdutoResponse response = produtoService.atualizarProduto(productId, request);
+        ProdutoResponse response = produtoService.atualizarProduto(produtoId, request);
 
         assertNotNull(response);
         assertEquals("Produto Atualizado", response.getNome());
@@ -63,13 +63,13 @@ public class ProdutoServiceTest {
 
     @Test
     void shouldThrowProdutoNotFoundExceptionWhenIdDoesNotExist() {
-        Long productId = 1L;
+        Long produtoId = 1L;
         ProdutoRequest request = new ProdutoRequest("Produto Atualizado", 15.0, "Descrição Atualizada", 10);
 
-        when(produtoRepository.findById(productId)).thenReturn(Optional.empty());
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.empty());
 
         assertThrows(ProdutoNotFoundException.class, () -> {
-            produtoService.atualizarProduto(productId, request);
+            produtoService.atualizarProduto(produtoId, request);
         });
     }
 
@@ -77,11 +77,11 @@ public class ProdutoServiceTest {
     void shouldCreateProductSuccessfully() {
         ProdutoRequest request = new ProdutoRequest("Produto Novo", 20.0, "Descrição do Produto Novo", 5);
         Produto produto = new Produto(null, "Produto Novo", 20.0, "Descrição do Produto Novo", 5);
-        Produto savedProduto = new Produto(1L, "Produto Novo", 20.0, "Descrição do Produto Novo", 5);
+        Produto produtoSalvo = new Produto(1L, "Produto Novo", 20.0, "Descrição do Produto Novo", 5);
 
         when(produtoMapper.toEntity(request)).thenReturn(produto);
-        when(produtoRepository.save(produto)).thenReturn(savedProduto);
-        when(produtoMapper.toResponse(savedProduto)).thenReturn(new ProdutoResponse(1L, "Produto Novo", 20.0, "Descrição do Produto Novo", 5));
+        when(produtoRepository.save(produto)).thenReturn(produtoSalvo);
+        when(produtoMapper.toResponse(produtoSalvo)).thenReturn(new ProdutoResponse(1L, "Produto Novo", 20.0, "Descrição do Produto Novo", 5));
 
         ProdutoResponse response = produtoService.criarProduto(request);
 
@@ -91,22 +91,22 @@ public class ProdutoServiceTest {
 
         @Test
     void shouldDeleteProductWhenIdIsValid() {
-        Long productId = 1L;
+        Long produtoId = 1L;
 
-        when(produtoRepository.existsById(productId)).thenReturn(true);
+        when(produtoRepository.existsById(produtoId)).thenReturn(true);
 
-        assertDoesNotThrow(() -> produtoService.excluirProduto(productId));
-        verify(produtoRepository).deleteById(productId);
+        assertDoesNotThrow(() -> produtoService.excluirProduto(produtoId));
+        verify(produtoRepository).deleteById(produtoId);
     }
 
     @Test
     void shouldThrowProdutoNotFoundExceptionWhenDeletingNonExistentProduct() {
-        Long productId = 1L;
+        Long produtoId = 1L;
 
-        when(produtoRepository.existsById(productId)).thenReturn(false);
+        when(produtoRepository.existsById(produtoId)).thenReturn(false);
 
         assertThrows(ProdutoNotFoundException.class, () -> {
-            produtoService.excluirProduto(productId);
+            produtoService.excluirProduto(produtoId);
         });
     }
 

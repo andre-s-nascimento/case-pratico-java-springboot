@@ -31,17 +31,17 @@ public class ProdutoRepositoryTest {
         
         produtoRepository.save(produto);
         
-        Optional<Produto> foundProduto = produtoRepository.findById(produto.getId());
+        Optional<Produto> produtoEncontrado = produtoRepository.findById(produto.getId());
         
-        assertTrue(foundProduto.isPresent());
-        assertEquals("Produto 1", foundProduto.get().getNome());
+        assertTrue(produtoEncontrado.isPresent());
+        assertEquals("Produto 1", produtoEncontrado.get().getNome());
     }
 
     @Test
     void shouldReturnEmptyWhenProdutoNotFound() {
-        Optional<Produto> foundProduto = produtoRepository.findById(999L); // ID que não existe
+        Optional<Produto> produtoEncontrado = produtoRepository.findById(999L); // ID que não existe
         
-        assertFalse(foundProduto.isPresent());
+        assertFalse(produtoEncontrado.isPresent());
     }
 
     @Test
@@ -52,9 +52,9 @@ public class ProdutoRepositoryTest {
         
         produtoRepository.deleteById(produto.getId()); // Exclui o produto
         
-        Optional<Produto> foundProduto = produtoRepository.findById(produto.getId());
+        Optional<Produto> produtoEncontrado = produtoRepository.findById(produto.getId());
         
-        assertFalse(foundProduto.isPresent()); // Verifica se o produto foi excluído
+        assertFalse(produtoEncontrado.isPresent()); // Verifica se o produto foi excluído
     }
 
     @Test
