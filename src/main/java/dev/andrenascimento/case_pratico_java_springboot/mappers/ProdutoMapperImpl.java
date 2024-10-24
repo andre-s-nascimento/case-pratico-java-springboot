@@ -11,6 +11,9 @@ public class ProdutoMapperImpl implements ProdutoMapper{
 
     @Override
     public ProdutoResponse toResponse(Produto produto) {
+        if (produto == null) {
+            return null; // Retorna null se o ProdutoRequest for nulo
+        }
         ProdutoResponse response = new ProdutoResponse();
         response.setId(produto.getId());
         response.setNome(produto.getNome());
@@ -23,6 +26,9 @@ public class ProdutoMapperImpl implements ProdutoMapper{
 
     @Override
     public Produto toEntity(ProdutoRequest produtoRequest) {
+        if (produtoRequest == null) {
+            return null; // Retorna null se o ProdutoRequest for nulo
+        }
         Produto produto = new Produto();
         produto.setNome(produtoRequest.getNome());
         produto.setPreco(produtoRequest.getPreco());

@@ -8,6 +8,18 @@ public class ProdutoResponse {
     private String descricao;
     private Integer quantidadeEmEstoque;
 
+    
+    public ProdutoResponse() {
+    }
+
+    public ProdutoResponse(Long id, String nome, Double preco, String descricao, Integer quantidadeEmEstoque) {
+        this.id = id;
+        this.nome = nome;
+        this.preco = preco;
+        this.descricao = descricao;
+        this.quantidadeEmEstoque = quantidadeEmEstoque;
+    }
+
     // Getters e Setters
     public Long getId() {
         return id;

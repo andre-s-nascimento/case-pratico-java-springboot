@@ -9,13 +9,17 @@ GET http://{{host}}/produtos
 
 ###
 
+GET http://{{host}}/produtos
+
+###
+
 POST http://{{host}}/produtos
 Content-Type: application/json
 
 {
-    "nome": "Produto E",
-    "preco": 65.0,
-    "descricao": "Descrição do Produto E",
+    "nome" : "A",
+    "preco": 1,
+    "descricao": "Descrição do Produto ",
     "quantidadeEmEstoque": 110
 }
 
@@ -32,4 +36,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://{{host}}/produtos/5
+DELETE http://{{host}}/produtos/4

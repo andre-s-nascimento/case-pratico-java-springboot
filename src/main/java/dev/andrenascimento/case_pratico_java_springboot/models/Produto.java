@@ -11,6 +11,19 @@ import jakarta.validation.constraints.Size;
 @Entity
 public class Produto {
 
+    public Produto() {
+    }
+
+    public Produto(Long id,
+            @Size(min = 2, message = "O nome do produto deve ter no mínimo 2 caracteres") @NotNull(message = "Nome do produto é obrigatório") String nome,
+            @PositiveOrZero Double preco, String descricao, @PositiveOrZero Integer quantidadeEmEstoque) {
+        this.id = id;
+        this.nome = nome;
+        this.preco = preco;
+        this.descricao = descricao;
+        this.quantidadeEmEstoque = quantidadeEmEstoque;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -66,7 +79,5 @@ public class Produto {
     public void setQuantidadeEmEstoque(Integer quantidadeEmEstoque) {
         this.quantidadeEmEstoque = quantidadeEmEstoque;
     }
-
-    
 
 }

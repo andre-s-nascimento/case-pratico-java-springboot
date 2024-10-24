@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import dev.andrenascimento.case_pratico_java_springboot.dtos.ProdutoRequest;
 import dev.andrenascimento.case_pratico_java_springboot.dtos.ProdutoResponse;
+import dev.andrenascimento.case_pratico_java_springboot.exceptions.ProdutoNotFoundException;
 import dev.andrenascimento.case_pratico_java_springboot.mappers.ProdutoMapper;
 import dev.andrenascimento.case_pratico_java_springboot.models.Produto;
 import dev.andrenascimento.case_pratico_java_springboot.repositories.ProdutoRepository;
@@ -28,7 +29,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     public ProdutoResponse atualizarProduto(Long id, ProdutoRequest produtoRequest) {
         Optional<Produto> produtoOpt = produtoRepository.findById(id);
         if (!produtoOpt.isPresent()) {
-            throw new NoSuchElementException(String.format("Não existe o produto com o id: [%s]", id));
+            throw new ProdutoNotFoundException(String.format("Não existe o produto com o id: [%s]", id));
         }
         Produto produto = produtoMapper.toEntity(produtoRequest);
         produto.setId(id);
@@ -46,7 +47,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     public void excluirProduto(Long id) {
         if (!produtoRepository.existsById(id)) {
-            throw new NoSuchElementException(String.format("Não existe o produto com o id: [%s]", id));
+            throw new ProdutoNotFoundException(String.format("Não existe o produto com o id: [%s]", id));
         }
         produtoRepository.deleteById(id);
 

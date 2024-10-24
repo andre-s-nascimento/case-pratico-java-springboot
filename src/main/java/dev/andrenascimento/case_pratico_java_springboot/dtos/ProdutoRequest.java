@@ -14,6 +14,19 @@ public class ProdutoRequest {
     private String descricao;
     private Integer quantidadeEmEstoque;
 
+    
+    public ProdutoRequest(
+            @NotNull(message = "Nome do produto é obrigatório") @Size(min = 2, message = "O nome do produto deve ter no mínimo 2 caracteres") String nome,
+            Double preco, String descricao, Integer quantidadeEmEstoque) {
+        this.nome = nome;
+        this.preco = preco;
+        this.descricao = descricao;
+        this.quantidadeEmEstoque = quantidadeEmEstoque;
+    }
+
+    public ProdutoRequest() {
+    }
+
     // Getters e Setters
     public String getNome() {
         return nome;
