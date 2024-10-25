@@ -32,12 +32,12 @@ public class Produto {
     @NotNull(message = "Nome do produto é obrigatório")
     private String nome;
 
-    @PositiveOrZero
+    @PositiveOrZero(message = "O preço não pode ser menor do que 0")
     private Double preco;
 
     private String descricao;
 
-    @PositiveOrZero
+    @PositiveOrZero(message = "A quantidade não pode ser menor do que 0")
     private Integer quantidadeEmEstoque;
 
     public Long getId() {

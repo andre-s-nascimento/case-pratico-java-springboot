@@ -36,34 +36,23 @@ public class ProdutoController {
 
     @PostMapping
     public ResponseEntity<ProdutoResponse> criarProduto(@Valid @RequestBody ProdutoRequest produtoRequest) {
-        try {
-            ProdutoResponse produtoResponse = produtoService.criarProduto(produtoRequest);
-            return ResponseEntity.status(HttpStatus.CREATED).body(produtoResponse);
-        } catch (RuntimeException e) {
-            System.out.println("Erro ao criar produto " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        ProdutoResponse produtoResponse = produtoService.criarProduto(produtoRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(produtoResponse);
+
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProdutoResponse> atualizarProduto(@PathVariable Long id, @RequestBody ProdutoRequest produtoRequest) {
-        try {
-            ProdutoResponse produtoResponse = produtoService.atualizarProduto(id, produtoRequest);
-            return ResponseEntity.ok(produtoResponse); 
-        } catch (RuntimeException e) {
-            System.out.println("Erro ao atualizar produto " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+    public ResponseEntity<ProdutoResponse> atualizarProduto(@PathVariable Long id,
+                                                            @RequestBody ProdutoRequest produtoRequest) {
+        ProdutoResponse produtoResponse = produtoService.atualizarProduto(id, produtoRequest);
+        return ResponseEntity.ok(produtoResponse);
+
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluirProduto(@PathVariable Long id) {
-        try {
-            produtoService.excluirProduto(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            System.out.println("Erro ao atualizar produto " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+        produtoService.excluirProduto(id);
+        return ResponseEntity.noContent().build();
+
     }
 }

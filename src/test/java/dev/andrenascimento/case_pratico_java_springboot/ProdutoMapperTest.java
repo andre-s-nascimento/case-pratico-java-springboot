@@ -17,10 +17,14 @@ public class ProdutoMapperTest {
 
     @Test
     void shouldMapProdutoRequestToProduto() {
-        ProdutoRequest request = new ProdutoRequest("Produto 1", 10.0, "Descrição do Produto 1", 5);
+        // Preparação
+        ProdutoRequest request = new ProdutoRequestBuilder()
+        .withNome("Produto 1").withPreco(10.0).withDescricao("Descrição do Produto 1").withQuantidadeEmEstoque(5).build();
 
+        // Executar o teste
         Produto produto = produtoMapper.toEntity(request);
 
+        // Expectativas - Asserções
         assertNotNull(produto);
         assertEquals("Produto 1", produto.getNome());
         assertEquals(10.0, produto.getPreco());
@@ -30,10 +34,14 @@ public class ProdutoMapperTest {
 
     @Test
     void shouldMapProdutoToProdutoResponse() {
-        Produto produto = new Produto(1L, "Produto 1", 10.0, "Descrição do Produto 1", 5);
+        // Preparação
+        Produto produto = new ProdutoBuilder()
+        .withId(1L).withNome("Produto 1").withPreco(10.0).withDescricao("Descrição do Produto 1").withQuantidadeEmEstoque(5).build();
 
+        // Executar o teste
         ProdutoResponse response = produtoMapper.toResponse(produto);
 
+        // Expectativas - Asserções
         assertNotNull(response);
         assertEquals(1L, response.getId());
         assertEquals("Produto 1", response.getNome());
@@ -44,24 +52,32 @@ public class ProdutoMapperTest {
 
     @Test
     void shouldReturnNullWhenProdutoRequestIsNull() {
+        // Executar o teste
         Produto produto = produtoMapper.toEntity(null);
 
+        // Expectativas - Asserções
         assertNull(produto);
     }
 
     @Test
     void shouldReturnNullWhenProdutoIsNull() {
+        // Executar o teste
         ProdutoResponse response = produtoMapper.toResponse(null);
 
+        // Expectativas - Asserções
         assertNull(response);
     }
 
     @Test
     void shouldMapOptionalFieldsCorrectly() {
-        ProdutoRequest request = new ProdutoRequest("Produto 1", null, "Descrição do Produto 1", null);
+        // Preparação
+        ProdutoRequest request = new ProdutoRequestBuilder()
+        .withNome("Produto 1").withPreco(null).withDescricao("Descrição do Produto 1").withQuantidadeEmEstoque(null).build();
 
+        // Executar o teste
         Produto produto = produtoMapper.toEntity(request);
 
+        // Expectativas - Asserções
         assertNotNull(produto);
         assertEquals("Produto 1", produto.getNome());
         assertNull(produto.getPreco()); // Verifica se o preço é null

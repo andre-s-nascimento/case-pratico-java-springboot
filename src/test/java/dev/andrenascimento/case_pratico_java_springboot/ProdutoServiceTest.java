@@ -1,22 +1,5 @@
 package dev.andrenascimento.case_pratico_java_springboot;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import dev.andrenascimento.case_pratico_java_springboot.dtos.ProdutoRequest;
 import dev.andrenascimento.case_pratico_java_springboot.dtos.ProdutoResponse;
 import dev.andrenascimento.case_pratico_java_springboot.exceptions.ProdutoNotFoundException;
@@ -24,6 +7,22 @@ import dev.andrenascimento.case_pratico_java_springboot.mappers.ProdutoMapper;
 import dev.andrenascimento.case_pratico_java_springboot.models.Produto;
 import dev.andrenascimento.case_pratico_java_springboot.repositories.ProdutoRepository;
 import dev.andrenascimento.case_pratico_java_springboot.services.ProdutoServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ProdutoServiceTest {
 
@@ -42,20 +41,37 @@ public class ProdutoServiceTest {
     }
 
     @Test
-    void shouldUpdateProductWhenIdIsValid() {
+    void shouldUpdateProdutoWhenIdIsValid() {
+        // Preparação
         Long produtoId = 1L;
-        ProdutoRequest request = new ProdutoRequest("Produto Atualizado", 15.0, "Descrição Atualizada", 10);
-        Produto produtoExistente = new Produto(produtoId, "Produto Antigo", 10.0, "Descrição Antiga", 5);
-        Produto produtoAtualizado = new Produto(produtoId, "Produto Atualizado", 15.0, "Descrição Atualizada", 10);
+        ProdutoRequest request = new ProdutoRequestBuilder().withNome("Produto Atualizado")
+                .withPreco(15.0).withDescricao("Descrição Atualizada").withQuantidadeEmEstoque(10).build();
+        Produto produtoExistente = new ProdutoBuilder().withId(produtoId)
+                .withNome("Produto Antigo")
+                .withPreco(10.0)
+                .withDescricao("Descrição Antiga")
+                .withQuantidadeEmEstoque(5)
+                .build();
+        Produto produtoAtualizado = new ProdutoBuilder().withId(produtoId)
+                .withNome("Produto Atualizado")
+                .withPreco(15.0)
+                .withDescricao("Descrição Atualizada")
+                .withQuantidadeEmEstoque(10)
+                .build();
 
         when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produtoExistente));
+        when(produtoRepository.existsById(produtoId)).thenReturn(true);
         when(produtoMapper.toEntity(request)).thenReturn(produtoAtualizado);
         when(produtoRepository.save(produtoAtualizado)).thenReturn(produtoAtualizado);
         when(produtoMapper.toResponse(produtoAtualizado))
-                .thenReturn(new ProdutoResponse(produtoId, "Produto Atualizado", 15.0, "Descrição Atualizada", 10));
+                .thenReturn(new ProdutoResponseBuilder().withId(produtoId)
+                        .withNome("Produto Atualizado").withPreco(15.0).withDescricao("Descrição Atualizada")
+                        .withQuantidadeEmEstoque(10).build());
 
+        // Executar o teste
         ProdutoResponse response = produtoService.atualizarProduto(produtoId, request);
 
+        // Expectativas - Asserções
         assertNotNull(response);
         assertEquals("Produto Atualizado", response.getNome());
         assertEquals(15.0, response.getPreco());
@@ -63,66 +79,112 @@ public class ProdutoServiceTest {
 
     @Test
     void shouldThrowProdutoNotFoundExceptionWhenIdDoesNotExist() {
+        // Preparação
         Long produtoId = 1L;
-        ProdutoRequest request = new ProdutoRequest("Produto Atualizado", 15.0, "Descrição Atualizada", 10);
+        ProdutoRequest request = new ProdutoRequestBuilder().withNome("Produto Atualizado")
+                .withPreco(15.0).withDescricao("Descrição Atualizada").withQuantidadeEmEstoque(10).build();
 
         when(produtoRepository.findById(produtoId)).thenReturn(Optional.empty());
 
-        assertThrows(ProdutoNotFoundException.class, () -> {
-            produtoService.atualizarProduto(produtoId, request);
-        });
+        // Executar com Expectativas - Asserções
+        assertThrows(ProdutoNotFoundException.class, () -> produtoService.atualizarProduto(produtoId, request));
     }
 
     @Test
-    void shouldCreateProductSuccessfully() {
-        ProdutoRequest request = new ProdutoRequest("Produto Novo", 20.0, "Descrição do Produto Novo", 5);
-        Produto produto = new Produto(null, "Produto Novo", 20.0, "Descrição do Produto Novo", 5);
-        Produto produtoSalvo = new Produto(1L, "Produto Novo", 20.0, "Descrição do Produto Novo", 5);
+    void shouldCreateProdutoSuccessfully() {
+        // Preparação
+        ProdutoRequest request = new ProdutoRequestBuilder().withNome("Produto Novo")
+                .withPreco(20.0)
+                .withDescricao("Descrição do Produto Novo")
+                .withQuantidadeEmEstoque(5)
+                .build();
+        Produto produto = new ProdutoBuilder()
+                .withId(null)
+                .withNome("Produto Novo")
+                .withPreco(20.0)
+                .withDescricao("Descrição do Produto Novo")
+                .withQuantidadeEmEstoque(5)
+                .build();
+        Produto produtoSalvo = new ProdutoBuilder()
+                .withId(1L)
+                .withNome("Produto Novo")
+                .withPreco(20.0)
+                .withDescricao("Descrição do Produto Novo")
+                .withQuantidadeEmEstoque(5)
+                .build();
 
         when(produtoMapper.toEntity(request)).thenReturn(produto);
         when(produtoRepository.save(produto)).thenReturn(produtoSalvo);
-        when(produtoMapper.toResponse(produtoSalvo)).thenReturn(new ProdutoResponse(1L, "Produto Novo", 20.0, "Descrição do Produto Novo", 5));
+        when(produtoMapper.toResponse(produtoSalvo)).thenReturn(
+                new ProdutoResponse(1L, "Produto Novo", 20.0, "Descrição do Produto Novo", 5));
 
+        // Executar o teste
         ProdutoResponse response = produtoService.criarProduto(request);
 
+        // Expectativas - Asserções
         assertNotNull(response);
         assertEquals("Produto Novo", response.getNome());
     }
 
-        @Test
-    void shouldDeleteProductWhenIdIsValid() {
+    @Test
+    void shouldDeleteProdutoWhenIdIsValid() {
+        // Preparação
         Long produtoId = 1L;
 
         when(produtoRepository.existsById(produtoId)).thenReturn(true);
 
+        // Executar o teste - Expectativas - Asserções
         assertDoesNotThrow(() -> produtoService.excluirProduto(produtoId));
         verify(produtoRepository).deleteById(produtoId);
     }
 
     @Test
-    void shouldThrowProdutoNotFoundExceptionWhenDeletingNonExistentProduct() {
+    void shouldThrowProdutoNotFoundExceptionWhenDeletingNonExistentProduto() {
+        // Preparação
         Long produtoId = 1L;
 
         when(produtoRepository.existsById(produtoId)).thenReturn(false);
 
-        assertThrows(ProdutoNotFoundException.class, () -> {
-            produtoService.excluirProduto(produtoId);
-        });
+        // Executar o teste - Expectativas - Asserções
+        assertThrows(ProdutoNotFoundException.class, () -> produtoService.excluirProduto(produtoId));
     }
 
     @Test
-    void shouldReturnListOfProducts() {
-        Produto produto1 = new Produto(1L, "Produto 1", 10.0, "Descrição 1", 5);
-        Produto produto2 = new Produto(2L, "Produto 2", 20.0, "Descrição 2", 10);
-        
-        List<Produto> produtos = Arrays.asList(produto1, produto2);
-        
-        when(produtoRepository.findAll()).thenReturn(produtos);
-        when(produtoMapper.toResponse(produto1)).thenReturn(new ProdutoResponse(1L, "Produto 1", 10.0, "Descrição 1", 5));
-        when(produtoMapper.toResponse(produto2)).thenReturn(new ProdutoResponse(2L, "Produto 2", 20.0, "Descrição 2", 10));
+    void shouldReturnListOfProdutos() {
+        // Preparação
+        Produto produto1 = new ProdutoBuilder().withId(1L)
+                .withNome("Produto 1")
+                .withPreco(10.0)
+                .withDescricao("Descrição 1")
+                .withQuantidadeEmEstoque(5)
+                .build();
+        Produto produto2 = new ProdutoBuilder().withId(2L)
+                .withNome("Produto 2")
+                .withPreco(20.0)
+                .withDescricao("Descrição 2")
+                .withQuantidadeEmEstoque(10)
+                .build();
 
+        List<Produto> produtos = Arrays.asList(produto1, produto2);
+
+        when(produtoRepository.findAll()).thenReturn(produtos);
+        when(produtoMapper.toResponse(produto1)).thenReturn(new ProdutoResponseBuilder().withId(1L)
+                .withNome("Produto 1")
+                .withPreco(10.0)
+                .withDescricao("Descrição 1")
+                .withQuantidadeEmEstoque(5)
+                .build());
+        when(produtoMapper.toResponse(produto2)).thenReturn(new ProdutoResponseBuilder().withId(2L)
+                .withNome("Produto 2")
+                .withPreco(20.0)
+                .withDescricao("Descrição 2")
+                .withQuantidadeEmEstoque(10)
+                .build());
+
+        // Executar o teste
         List<ProdutoResponse> response = produtoService.listarProdutos();
 
+        // Expectativas - Asserções
         assertNotNull(response);
         assertEquals(2, response.size());
     }

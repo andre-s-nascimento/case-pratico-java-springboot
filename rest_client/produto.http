@@ -17,7 +17,7 @@ POST http://{{host}}/produtos
 Content-Type: application/json
 
 {
-    "nome" : "A",
+    "nome" : "AAA",
     "preco": 1,
     "descricao": "Descrição do Produto ",
     "quantidadeEmEstoque": 110
@@ -25,7 +25,7 @@ Content-Type: application/json
 
 ###
 
-PUT http://{{host}}/produtos/5
+PUT http://{{host}}/produtos/6
 Content-Type: application/json
 
 {
@@ -36,4 +36,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://{{host}}/produtos/4
+DELETE http://{{host}}/produtos/5

@@ -1,6 +1,7 @@
 package dev.andrenascimento.case_pratico_java_springboot.dtos;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
 // Para receber dados na criação e atualização de produtos.
@@ -10,14 +11,17 @@ public class ProdutoRequest {
     @Size(min = 2, message = "O nome do produto deve ter no mínimo 2 caracteres")
     private String nome;
 
+    @PositiveOrZero(message = "O preço não pode ser menor do que 0")
     private Double preco;
     private String descricao;
+    @PositiveOrZero(message = "A quantidade não pode ser menor do que 0")
     private Integer quantidadeEmEstoque;
 
     
     public ProdutoRequest(
-            @NotNull(message = "Nome do produto é obrigatório") @Size(min = 2, message = "O nome do produto deve ter no mínimo 2 caracteres") String nome,
-            Double preco, String descricao, Integer quantidadeEmEstoque) {
+            @NotNull(message = "Nome do produto é obrigatório") 
+            @Size(min = 2, message = "O nome do produto deve ter no mínimo 2 caracteres") String nome,
+            @PositiveOrZero(message = "O preço não pode ser menor do que 0") Double preco, String descricao, @PositiveOrZero(message = "A quantidade não pode ser menor do que 0") Integer quantidadeEmEstoque) {
         this.nome = nome;
         this.preco = preco;
         this.descricao = descricao;

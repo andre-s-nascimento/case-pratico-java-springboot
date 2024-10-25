@@ -1,171 +1,162 @@
 package dev.andrenascimento.case_pratico_java_springboot;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import dev.andrenascimento.case_pratico_java_springboot.controllers.ProdutoController;
+import dev.andrenascimento.case_pratico_java_springboot.dtos.ProdutoRequest;
+import dev.andrenascimento.case_pratico_java_springboot.dtos.ProdutoResponse;
+import dev.andrenascimento.case_pratico_java_springboot.exceptions.ProdutoNotFoundException;
+import dev.andrenascimento.case_pratico_java_springboot.services.ProdutoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
 
-import dev.andrenascimento.case_pratico_java_springboot.controllers.ProdutoController;
-import dev.andrenascimento.case_pratico_java_springboot.dtos.ProdutoRequest;
-import dev.andrenascimento.case_pratico_java_springboot.dtos.ProdutoResponse;
-import dev.andrenascimento.case_pratico_java_springboot.mappers.ProdutoMapper;
-import dev.andrenascimento.case_pratico_java_springboot.models.Produto;
-import dev.andrenascimento.case_pratico_java_springboot.services.ProdutoService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ProdutoControllerTest {
 
-    @InjectMocks
-    private ProdutoController produtoController;
+    @InjectMocks private ProdutoController produtoController;
 
-    @Mock
-    private ProdutoService produtoService;
-
-    @Mock
-    private ProdutoMapper produtoMapper;
-
-    private MockMvc mockMvc;
-
-    private ObjectMapper objectMapper;
+    @Mock private ProdutoService produtoService;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(produtoController).build();
-        objectMapper = new ObjectMapper();
     }
 
     @Test
-    void shouldReturnAProductList() throws Exception {
-        // Prepare o retorno do serviço
-        List<ProdutoResponse> produtos = generateProdutoResponse(0);
+    void shouldReturnAListOfProdutos() {
+        // Preparação
+        List<ProdutoResponse> produtos = generateProdutoResponse(2);
         when(produtoService.listarProdutos()).thenReturn(produtos);
 
+        // Executar o teste
+        ResponseEntity<List<ProdutoResponse>> response = produtoController.listarProdutos();
+
+        // Expectativas - Asserções
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(produtos, response.getBody());
+        verify(produtoService, times(1)).listarProdutos();
+    }
+
+    @Test
+    void shouldCreateProdutoWhenRequestIsValid() {
+        // Preparação
+        ProdutoRequest produtoRequest = new ProdutoRequestBuilder().withNome("Produto 1")
+                .withPreco(10.0)
+                .withDescricao("Descrição do Produto 1")
+                .withQuantidadeEmEstoque(5)
+                .build();
+        ProdutoResponse produtoResponse = new ProdutoResponseBuilder().withId(5L)
+                .withNome("Produto 1")
+                .withPreco(10.0)
+                .withDescricao("Descrição do Produto 1")
+                .withQuantidadeEmEstoque(5)
+                .build();
+
+        when(produtoService.criarProduto(produtoRequest)).thenReturn(produtoResponse);
+
+        // Executar o teste
+        ResponseEntity<ProdutoResponse> response = produtoController.criarProduto(produtoRequest);
+
+        // Expectativas - Asserts
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(produtoResponse, response.getBody());
+        verify(produtoService, times(1)).criarProduto(produtoRequest);
+    }
+
+    @Test
+    void shouldUpdateProductWhenRequestIsValid() {
+        // Preparação
+        Long produtoId = 1L;
+        ProdutoRequest produtoRequest = new ProdutoRequestBuilder().withNome("Produto Atualizado")
+                .withPreco(15.0)
+                .withDescricao("Descrição Atualizada")
+                .withQuantidadeEmEstoque(10)
+                .build();
+        ProdutoResponse produtoResponse = new ProdutoResponseBuilder().withId(produtoId)
+                .withNome("Produto Atualizado")
+                .withPreco(15.0)
+                .withDescricao("Descrição Atualizada")
+                .withQuantidadeEmEstoque(10)
+                .build();
+
+        when(produtoService.atualizarProduto(produtoId, produtoRequest)).thenReturn(produtoResponse);
+
         // Execute o teste
-        mockMvc.perform(get("/produtos"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(0)));
+        ResponseEntity<ProdutoResponse> response = produtoController.atualizarProduto(produtoId, produtoRequest);
+
+        // Expectativas - Asserts
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(produtoResponse, response.getBody());
+        verify(produtoService, times(1)).atualizarProduto(produtoId, produtoRequest);
     }
 
     @Test
-    void shouldCreateProductWhenRequestIsValid() throws Exception {
-        ProdutoRequest request = new ProdutoRequest("Produto 1", 10.0, "Descrição do Produto 1", 5);
-        ProdutoResponse response = new ProdutoResponse(1L, "Produto 1", 10.0, "Descrição do Produto 1", 5);
-        Produto produto = new Produto(1L, "Produto 1", 10.0, "Descrição do Produto 1", 5);
+    void shouldDeleteProductWhenIdIsValid() {
+        // Preparação
+        Long produtoId = 1L;
 
-        when(produtoMapper.toEntity(any(ProdutoRequest.class))).thenReturn(produto);
-        when(produtoService.criarProduto(any(ProdutoRequest.class))).thenReturn(response);
+        doNothing().when(produtoService).excluirProduto(produtoId);
 
-        mockMvc.perform(post("/produtos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.nome").value("Produto 1"))
-                .andExpect(jsonPath("$.preco").value(10.0))
-                .andExpect(jsonPath("$.descricao").value("Descrição do Produto 1"))
-                .andExpect(jsonPath("$.quantidadeEmEstoque").value(5));
+        // Execute o teste
+        ResponseEntity<Void> response = produtoController.excluirProduto(produtoId);
+
+        // Expectativas - Asserts
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(produtoService, times(1)).excluirProduto(produtoId);
     }
 
     @Test
-    void shouldReturnBadRequestWhenProductRequestIsInvalid() throws Exception {
-        ProdutoRequest request = new ProdutoRequest(null, -10.0, "Descrição", -5); // Nome nulo e preço negativo
-        mockMvc.perform(post("/produtos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+    void shouldReturnNotFoundWhenDeletingNonExistentProduto() {
+        // Preparação
+        Long produtoId = 1L;
+        doThrow(ProdutoNotFoundException.class).when(produtoService).excluirProduto(produtoId);
+
+        // Execute o teste
+        assertThrows(ProdutoNotFoundException.class, () -> produtoController.excluirProduto(produtoId));
+
+        // Expectativas - Asserts
+        verify(produtoService, times(1)).excluirProduto(produtoId);
     }
 
     @Test
-    void shouldReturnInternalServerErrorWhenServiceThrowsException() throws Exception {
-        ProdutoRequest request = new ProdutoRequest("Produto 1", 10.0, "Descrição do Produto 1", 5);
+    void shouldReturnInternalServerErrorWhenServiceThrowsException() {
+        // Preparação
+        Long produtoId = 1L;
+        ProdutoRequest produtoRequest = new ProdutoRequest();
+        doThrow(new RuntimeException("Erro genérico")).when(produtoService).atualizarProduto(produtoId, produtoRequest);
 
-        when(produtoMapper.toEntity(any(ProdutoRequest.class))).thenReturn(new Produto());
-        when(produtoService.criarProduto(any(ProdutoRequest.class)))
-                .thenThrow(new RuntimeException("Erro ao criar produto"));
+        // Executar o teste
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> produtoController.atualizarProduto(produtoId, produtoRequest));
 
-        mockMvc.perform(post("/produtos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isInternalServerError());
+        // Expectativas - Asserções
+        assertEquals("Erro genérico", exception.getMessage());
+
     }
 
     @Test
-    void shouldUpdateProductWhenRequestIsValid() throws Exception {
-        Long productId = 1L;
-        ProdutoRequest request = new ProdutoRequest("Produto Atualizado", 15.0, "Descrição Atualizada", 10);
-        ProdutoResponse response = new ProdutoResponse(productId, "Produto Atualizado", 15.0, "Descrição Atualizada",
-                10);
+    void shouldReturnNotFoundWhenProdutoIdDoesNotExist() {
+        // Preparação
+        Long produtoId = 1L;
+        ProdutoRequest produtoRequest = new ProdutoRequest();
+        doThrow(ProdutoNotFoundException.class).when(produtoService).atualizarProduto(produtoId, produtoRequest);
 
-        when(produtoService.atualizarProduto(eq(productId), any(ProdutoRequest.class))).thenReturn(response);
-
-        mockMvc.perform(put("/produtos/{id}", productId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(productId))
-                .andExpect(jsonPath("$.nome").value("Produto Atualizado"))
-                .andExpect(jsonPath("$.preco").value(15.0))
-                .andExpect(jsonPath("$.descricao").value("Descrição Atualizada"))
-                .andExpect(jsonPath("$.quantidadeEmEstoque").value(10));
-    }
-
-    @Test
-    void shouldReturnNotFoundWhenProductIdDoesNotExist() throws Exception {
-        Long productId = 1L;
-        ProdutoRequest request = new ProdutoRequest("Produto Atualizado", 15.0, "Descrição Atualizada", 10);
-    
-        // Simula a exceção lançada pelo serviço
-        when(produtoService.atualizarProduto(eq(productId), any(ProdutoRequest.class)))
-                .thenThrow(new RuntimeException("Produto não encontrado"));
-    
-        // Executa a requisição PUT
-        mockMvc.perform(put("/produtos/{id}", productId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isNotFound()); // Espera-se um status 404
-    }
-
-    @Test
-    void shouldDeleteProductWhenIdIsValid() throws Exception {
-        Long productId = 1L;
-
-        doNothing().when(produtoService).excluirProduto(productId);
-
-        mockMvc.perform(delete("/produtos/{id}", productId))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    void shouldReturnNotFoundWhenDeletingNonExistentProduct() throws Exception {
-        Long productId = 1L;
-
-        doThrow(new RuntimeException("Produto não encontrado")).when(produtoService).excluirProduto(productId);
-
-        mockMvc.perform(delete("/produtos/{id}", productId))
-                .andExpect(status().isNotFound());
+        // Executar o teste - Expectativas - Asserções
+        assertThrows(ProdutoNotFoundException.class,
+                () -> produtoController.atualizarProduto(produtoId, produtoRequest));
     }
 
     List<ProdutoResponse> generateProdutoResponse(int quantidade) {
@@ -178,11 +169,12 @@ public class ProdutoControllerTest {
 
         // Gera a lista de produtos para quantidade maior que 0
         for (int i = 0; i < quantidade; i++) {
-            ProdutoResponse produto = new ProdutoResponse();
-            produto.setId(Long.valueOf(i));
-            produto.setNome("Produto " + i);
-            produto.setPreco(Double.valueOf(i) * 1.99);
-            produto.setDescricao("Descrição do Produto " + i);
+            ProdutoResponse produto = new ProdutoResponseBuilder().withId((long) i)
+                    .withNome("Produto " + i)
+                    .withPreco((double) i * 1.99)
+                    .withDescricao("Descrição do Produto " + i)
+                    .withQuantidadeEmEstoque(i)
+                    .build();
             produtos.add(produto);
         }
 

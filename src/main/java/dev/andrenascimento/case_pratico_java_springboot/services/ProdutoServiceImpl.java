@@ -1,7 +1,6 @@
 package dev.andrenascimento.case_pratico_java_springboot.services;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -26,13 +25,15 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Override
     public ProdutoResponse atualizarProduto(Long id, ProdutoRequest produtoRequest) {
-        Optional<Produto> produtoOpt = produtoRepository.findById(id);
-        if (!produtoOpt.isPresent()) {
+        // Verifica se o produto existe
+        if (!produtoRepository.existsById(id)) {
             throw new ProdutoNotFoundException(String.format("Não existe o produto com o id: [%s]", id));
         }
-        Produto produto = produtoMapper.toEntity(produtoRequest);
-        produto.setId(id);
-        Produto updatedProduto = produtoRepository.save(produto);
+
+        // Se o produto existe, atualiza
+        var produtoToSave = produtoMapper.toEntity(produtoRequest);
+        produtoToSave.setId(id);
+        Produto updatedProduto = produtoRepository.save(produtoToSave);
         return produtoMapper.toResponse(updatedProduto);
     }
 
