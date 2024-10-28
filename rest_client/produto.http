@@ -17,9 +17,9 @@ POST http://{{host}}/produtos
 Content-Type: application/json
 
 {
-    "nome" : "AAA",
+    "nome" : "BBB",
     "preco": 1,
-    "descricao": "Descrição do Produto ",
+    "descricao": "Descrição do Produto BBB",
     "quantidadeEmEstoque": 110
 }
 
@@ -30,9 +30,9 @@ Content-Type: application/json
 
 {
     "nome": "Produto Ehh",
-    "preco": 20.0,
+    "preco": 1.0,
     "descricao": "Descrição do Produto Ehh",
-    "quantidadeEmEstoque": 300
+    "quantidadeEmEstoque": 150
 }
 
 ###
