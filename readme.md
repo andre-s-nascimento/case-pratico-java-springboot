@@ -1,5 +1,7 @@
 # Sistema de Gerenciamento de Produtos
 
+![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=java) ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.3.4-green?style=for-the-badge&logo=spring-boot) ![Maven](https://img.shields.io/badge/Maven-3.9.9-red?style=for-the-badge&logo=apache-maven) ![JUnit5](https://img.shields.io/badge/JUnit5-5.10.3-green?style=for-the-badge&logo=junit5) ![Mockito](https://img.shields.io/badge/Mockito-5.11.10-blue?style=for-the-badge) [![codecov](https://img.shields.io/codecov/c/github/andre-s-nascimento/case-pratico-java-springboot?style=for-the-badge&logo=codecov)](https://codecov.io/gh/andre-s-nascimento/case-pratico-java-springboot)
+
 Este é um sistema simples para gerenciar produtos em uma aplicação Spring Boot.
 
 ## Funcionalidades
@@ -28,6 +30,7 @@ DTOs (Data Transfer Objects): Modelos utilizados para transportar dados entre as
 - Spring Data JPA
 - Banco de dados H2 (em memória)
 - Maven (gerenciamento de dependências)
+- JUnit & Mockito
 
 ## Como executar
 
